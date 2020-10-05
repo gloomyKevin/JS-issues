@@ -57,15 +57,47 @@ document.getElementById('button').addEventListener("click", function () {
 });
 
 // watch函数
+(function () {
+    var root = this
+    function watch(obj, name, func) {
+        var value = obj[name]
 
-var proxy = new Proxy(target, handler)
+        Object.defineProperty(obj, name, {
+            get: function () {
+                return value
+            },
 
-var proxy = new Proxy({}, {
-    get: function (obj, prop) {
-        return obj[prop]
-    },
+            set: function (newValue) {
+                value = newValue
+                func(value)
+            }
+        })
 
-    set: function (obj, prop, value) {
-        obj[prop] = value
+        if (value) obj[name] = value
     }
-})
+    this.watch = watch
+})()
+
+    // 使用proxy重写watch
+    (function () {
+        var root = this
+        function watch(target, func) {
+            var proxy = new Proxy(target, {
+                get: function (target, prop) {
+                    return target[prop]
+                },
+
+                set: function (target, prop, value) {
+                    target[prop] = value
+                    func(prop, value)
+                }
+            })
+            return proxy
+        }
+        this.watch = watch
+    })()
+
+var obj = {
+    value: 1
+}
+
