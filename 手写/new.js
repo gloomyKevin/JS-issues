@@ -28,4 +28,5 @@ function objectFactory() {
     return typeof ret === 'object' ? ret : obj
 }
 
+
 // 返回值效果实现
