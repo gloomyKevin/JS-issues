@@ -365,9 +365,6 @@ function MyPromise(callback) {
     }
 
     _this.reject = function () {
-        if (value instanceof MyPromise) {
-            value.then(resolve, reject)
-        }
         setTimeout(() => {
             if (_this.currentState === PENDING) {
                 _this.currentState = RESOLVED
@@ -375,5 +372,10 @@ function MyPromise(callback) {
                 _this.onRejectedCallbacks.foreach(cb => cb())
             }
         })
+    }
+    try {
+        callback(_this.resolve, _this.reject)
+    } catch (err) {
+        _this.reject(err)
     }
 }
